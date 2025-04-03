@@ -1,0 +1,4 @@
+#virtual enviroment
+llm_env/
+
+*.pth
