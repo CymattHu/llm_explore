@@ -7,7 +7,7 @@ class Gemini:
     Gemini class for interacting with the Gemini API.
     """
     def __init__(self):
-        self.client = genai.Client(api_key="AIzaSyBUWpKqJ8HoXWga_V_ZGOiUVKaSVrbVIOQ")
+        self.client = genai.Client(api_key="") #replace with your API key
         # self.model_name = "gemini-robotics-er"
         self.model_name = "gemini-2.5-pro-exp-03-25"
         self.bounding_box_system_instructions = """
