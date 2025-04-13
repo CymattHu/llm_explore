@@ -10,7 +10,7 @@ class utils:
     def _get_image_files(self,folder_path) -> List[str]:
         """acquire image files from the folder."""
         if not os.path.exists(folder_path):
-            raise FileNotFoundError(f"failed to read folder: {self.folder_path}")
+            raise FileNotFoundError(f"failed to read folder: {folder_path}")
         supported_formats = {".jpg", ".jpeg", ".png"}
         return [os.path.join(folder_path, file_name) 
                for file_name in os.listdir(folder_path)
@@ -48,22 +48,27 @@ class utils:
         :return: Converted bounding box as (x1, y1, x2, y2) in pixel coordinates.
         """
         try:
-            # Parse the bounding box data from the json_output (assuming the first element contains the required box_2d)
-            bbox = json.loads(json_output)[0].get("box_2d", None)
+            bboxes_pixel = []
             
-            if bbox is None:
-                raise ValueError("No 'box_2d' found in the JSON output.")
+            # Parse the JSON string to a Python list
+            items = json.loads(json_output)
 
             # Calculate scaling factors based on the image size
             scale_w, scale_h = image.width / 1000, image.height / 1000
-            
-            # Convert the bounding box from normalized coordinates to pixel coordinates
-            y1, x1, y2, x2 = bbox
-            x1, y1 = int(x1 * scale_w), int(y1 * scale_h)
-            x2, y2 = int(x2 * scale_w), int(y2 * scale_h)
-            
-            # Return the bounding box in pixel coordinates
-            return (x1, y1, x2, y2)
+
+            for item in items:
+                bbox = item.get("box_2d", None)
+                if bbox is not None:
+                    y1, x1, y2, x2 = bbox
+                    x1, y1 = int(x1 * scale_w), int(y1 * scale_h)
+                    x2, y2 = int(x2 * scale_w), int(y2 * scale_h)
+                    bboxes_pixel.append((x1, y1, x2, y2))
+
+            if not bboxes_pixel:
+                raise ValueError("No 'box_2d' found in any items of the JSON output.")
+
+            return bboxes_pixel
+
 
         except (json.JSONDecodeError, ValueError) as e:
             print(f"Error parsing JSON or extracting 'box_2d': {e}")

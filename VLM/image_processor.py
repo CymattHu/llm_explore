@@ -6,7 +6,7 @@ class ImageProcessor:
     def __init__(self, image_path: str):
         """Initialize the ImageProcessor with an image path."""
         self.image_path = image_path
-        self.image = Image.open(self.image_path)
+        self.image = Image.open(self.image_path).convert("RGB")
         if self.image is None:
             raise ValueError(f"failed to load image: {image_path}")
         # self.image.thumbnail([1024,1024], Image.Resampling.LANCZOS)
@@ -25,7 +25,7 @@ class ImageProcessor:
         image_copy = self.image.copy()
         width, height = image_copy.size
         color_map = {} 
-        font = ImageFont.truetype("NotoSansCJK-Regular.ttc", size=14)
+        font = ImageFont.truetype("NotoSansCJK-Regular.ttc", size=70)
         
 
         for item in boxes:
@@ -36,16 +36,20 @@ class ImageProcessor:
             # if color is None, generate a random color for each label
             if color is None:
                 if label not in color_map:
-                    color_map[label] = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+                    if image_copy.mode == "RGBA":
+                        # color_map[label] = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+                        color_map[label] = (255, 0, 0)
+                    else:
+                        # color_map[label] = random.randint(0, 255) 
+                        color_map[label] = 255             
                 box_color = color_map[label]
             else:
                 box_color = color
-
             # draw the bounding box
             draw = ImageDraw.Draw(image_copy)
             abs_x1, abs_x2 = min(x1, x2), max(x1, x2)
             abs_y1, abs_y2 = min(y1, y2), max(y1, y2)
             draw.rectangle([abs_x1, abs_y1, abs_x2, abs_y2], outline=box_color, width=thickness)
-            draw.text((abs_x1, abs_y1 - 5), label, fill=color, font=font)
+            draw.text((abs_x1, abs_y1 - 5), label, fill=box_color, font=font)
         image_copy.show()
             

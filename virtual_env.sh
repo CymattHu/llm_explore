@@ -15,6 +15,12 @@ pip install -q -U google-genai
 pip install pillow
 pip install transformers
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
-pip install git+https://github.com/facebookresearch/segment-anything.git
+# pip install git+https://github.com/facebookresearch/sam2.git
+pip install opencv-python
+pip install opencv-contrib-python
+pip install numpy
+
+git submodule add https://github.com/cvg/LightGlue.git && cd LightGlue
+python -m pip install -e .
 
 echo "virtual enviroment has been configured!"
